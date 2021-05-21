@@ -20,7 +20,7 @@ def retryUntilSuccess(func, timeout=0):
             func()
             return
         except:
-            time.sleep(0.1)
+            time.sleep(1)
     raise RuntimeError("Retry timed out.")
 
 
@@ -56,6 +56,22 @@ def installStudio(launcherPath):
             return path
         time.sleep(1)
 
+versions_dir = r"C:\\Program Files (x86)\\Roblox\\Versions\\"
+
+def getStudioExePath():
+    for child in os.listdir(versions_dir):
+        exe_path = versions_dir + child + r"\\RobloxStudioBeta.exe"
+        if os.path.exists(exe_path):
+            return exe_path
+
+def launchStudio():
+    launchProcess(getStudioExePath())
+    while True:
+        # When RobloxStudioBeta.exe is running, the installer has completed
+        path = getProcessPath('RobloxStudioBeta.exe')
+        if path:
+            return path
+        time.sleep(1)
 
 # Method inspired by: https://github.com/jeparlefrancais/run-in-roblox-ci
 def prepareStudioLogin():
@@ -105,7 +121,7 @@ def waitForContentPath():
             winreg.CloseKey(regKey)
 
         # Poll for up to 5 seconds and then start over
-        retryUntilSuccess(poll, 5)
+        retryUntilSuccess(poll, 10)
 
     retryUntilSuccess(func)
 
@@ -158,9 +174,12 @@ def createSettingsFile():
 prepareStudioLogin()
 launcherPath = downloadStudioLauncher()
 studioPath = installStudio(launcherPath)
+launchStudio()
+time.sleep(10)
+requestKillStudioProcess()
 
 # We need to wait between each action here to reduce the chance of studio crashing
-time.sleep(5)
+time.sleep(30)
 waitForContentPath()
 createPluginsDirectory()
 removeAutoSaveDirectory()
