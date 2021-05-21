@@ -84,7 +84,7 @@ def forceKillStudioProcess():
 
 def isStudioAlive():
     for proc in psutil.process_iter():
-        if proc.name() == "RobloxStudioBeta.exe":
+        if proc.name() == "RobloxStudioBeta.exe" or proc.name() == "RobloxStudioLauncherBeta.exe":
             return True
     return False
 
