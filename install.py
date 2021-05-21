@@ -57,6 +57,22 @@ def installStudio(launcherPath):
             return path
         time.sleep(1)
 
+versions_dir = r"C:\\Program Files (x86)\\Roblox\\Versions\\"
+
+def getStudioExePath():
+    for child in os.listdir(versions_dir):
+        exe_path = versions_dir + child + r"\\RobloxStudioBeta.exe"
+        if os.path.exists(exe_path):
+            return exe_path
+
+def launchStudio():
+    launchProcess(getStudioExePath())
+    while True:
+        # When RobloxStudioBeta.exe is running, the installer has completed
+        path = getProcessPath('RobloxStudioBeta.exe')
+        if path:
+            return path
+        time.sleep(1)
 
 # Method inspired by: https://github.com/jeparlefrancais/run-in-roblox-ci
 def prepareStudioLogin():
@@ -79,7 +95,7 @@ def prepareStudioLogin():
 
 def requestKillStudioProcess():
     log('Sending terminate signal to RobloxStudioBeta')
-    os.system("taskkill /f /im RobloxStudioBeta.exe")
+    os.system("taskkill /im RobloxStudioBeta.exe")
 
 
 def forceKillStudioProcess():
@@ -160,6 +176,8 @@ log('Osyris fork! v3')
 prepareStudioLogin()
 launcherPath = downloadStudioLauncher()
 studioPath = installStudio(launcherPath)
+launchStudio()
+requestKillStudioProcess()
 
 # We need to wait between each action here to reduce the chance of studio crashing
 time.sleep(5)
