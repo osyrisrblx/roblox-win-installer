@@ -7,7 +7,7 @@ import psutil
 import winreg  # pylint: disable=import-error
 import pathlib
 import shutil
-
+import logging
 
 def log(string):
     print(string, flush=True)
