@@ -7,6 +7,7 @@ import psutil
 import winreg  # pylint: disable=import-error
 import pathlib
 import shutil
+import logging
 
 
 def log(string):
@@ -20,6 +21,7 @@ def retryUntilSuccess(func, timeout=0):
             func()
             return
         except:
+            logging.exception('')
             time.sleep(0.1)
     raise RuntimeError("Retry timed out.")
 
@@ -156,6 +158,7 @@ def createSettingsFile():
 prepareStudioLogin()
 launcherPath = downloadStudioLauncher()
 studioPath = installStudio(launcherPath)
+forceKillStudioProcess()
 
 # We need to wait between each action here to reduce the chance of studio crashing
 time.sleep(5)
@@ -163,8 +166,6 @@ prepareContentFolder()
 createPluginsDirectory()
 removeAutoSaveDirectory()
 createSettingsFile()
-time.sleep(5)
-forceKillStudioProcess()
 
 log('Roblox Studio has been installed')
 exit(0)
