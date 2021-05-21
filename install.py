@@ -78,7 +78,7 @@ def prepareStudioLogin():
 
 def requestKillStudioProcess():
     log('Sending terminate signal to RobloxStudioBeta')
-    os.system("taskkill /im RobloxStudioBeta.exe")
+    os.system("taskkill /f /im RobloxStudioBeta.exe")
 
 
 def forceKillStudioProcess():
