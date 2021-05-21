@@ -163,7 +163,7 @@ studioPath = installStudio(launcherPath)
 
 # We need to wait between each action here to reduce the chance of studio crashing
 time.sleep(5)
-# waitForContentPath()
+waitForContentPath()
 createPluginsDirectory()
 removeAutoSaveDirectory()
 createSettingsFile()
