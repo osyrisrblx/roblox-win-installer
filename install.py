@@ -88,6 +88,12 @@ def forceKillStudioProcess():
         if proc.name() == "RobloxStudioBeta.exe":
             proc.kill()
 
+def isStudioAlive():
+    for proc in psutil.process_iter():
+        if proc.name() == "RobloxStudioBeta.exe":
+            return True
+    return False
+
 versions_dir = r"C:\\Program Files (x86)\\Roblox\\Versions\\"
 
 def getStudioFolderPath():
@@ -160,8 +166,11 @@ launcherPath = downloadStudioLauncher()
 studioPath = installStudio(launcherPath)
 forceKillStudioProcess()
 
-# We need to wait between each action here to reduce the chance of studio crashing
-time.sleep(5)
+log('Waiting for Studio to close..')
+while isStudioAlive():
+    time.sleep(0.1)
+log('Studio is closed')
+
 prepareContentFolder()
 createPluginsDirectory()
 removeAutoSaveDirectory()
