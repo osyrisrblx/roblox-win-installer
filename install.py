@@ -155,6 +155,7 @@ def createSettingsFile():
     settingsFile.write(processedString)
     settingsFile.close()
 
+log('Osyris fork! v1')
 
 prepareStudioLogin()
 launcherPath = downloadStudioLauncher()
