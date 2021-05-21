@@ -180,7 +180,7 @@ launchStudio()
 requestKillStudioProcess()
 
 # We need to wait between each action here to reduce the chance of studio crashing
-time.sleep(5)
+time.sleep(30)
 waitForContentPath()
 createPluginsDirectory()
 removeAutoSaveDirectory()
