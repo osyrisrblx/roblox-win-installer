@@ -21,7 +21,7 @@ def retryUntilSuccess(func, timeout=0):
             return
         except:
             logging.exception('exception')
-            time.sleep(0.1)
+            time.sleep(1)
     raise RuntimeError("Retry timed out.")
 
 
@@ -122,7 +122,7 @@ def waitForContentPath():
             winreg.CloseKey(regKey)
 
         # Poll for up to 5 seconds and then start over
-        retryUntilSuccess(poll, 5)
+        retryUntilSuccess(poll, 10)
 
     retryUntilSuccess(func)
 
