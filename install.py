@@ -20,7 +20,7 @@ def retryUntilSuccess(func, timeout=0):
             func()
             return
         except:
-            time.sleep(1)
+            time.sleep(0.1)
     raise RuntimeError("Retry timed out.")
 
 
@@ -49,23 +49,6 @@ def launchProcess(executablePath):
 def installStudio(launcherPath):
     log('Installing Studio')
     launchProcess(launcherPath)
-    while True:
-        # When RobloxStudioBeta.exe is running, the installer has completed
-        path = getProcessPath('RobloxStudioBeta.exe')
-        if path:
-            return path
-        time.sleep(1)
-
-versions_dir = r"C:\\Program Files (x86)\\Roblox\\Versions\\"
-
-def getStudioExePath():
-    for child in os.listdir(versions_dir):
-        exe_path = versions_dir + child + r"\\RobloxStudioBeta.exe"
-        if os.path.exists(exe_path):
-            return exe_path
-
-def launchStudio():
-    launchProcess(getStudioExePath())
     while True:
         # When RobloxStudioBeta.exe is running, the installer has completed
         path = getProcessPath('RobloxStudioBeta.exe')
@@ -103,25 +86,24 @@ def forceKillStudioProcess():
         if proc.name() == "RobloxStudioBeta.exe":
             proc.kill()
 
+versions_dir = r"C:\\Program Files (x86)\\Roblox\\Versions\\"
 
-def waitForContentPath():
-    log('Waiting for the content path to be registered')
+def getStudioFolderPath():
+    for child in os.listdir(versions_dir):
+        child_path = versions_dir + child
+        if os.path.exists(child_path + r"\\RobloxStudioBeta.exe"):
+            return child_path
 
-    # The content path is used by applications like run-in-roblox to identify Studio's install directory
-    # These keys aren't created until studio closes, so keep retrying until they exist
+def prepareContentFolder():
+    log('Preparing ContentFolder for Studio')
+
+    studio_folder = getStudioFolderPath()
+    content_folder = studio_folder + r"\\content/"
 
     def func():
-        # Studio often ignores requests to kill, we should retry until it closes
-        requestKillStudioProcess()
-
-        def poll():
-            regKey = winreg.OpenKey(
-                winreg.HKEY_CURRENT_USER, r'Software\\Roblox\\RobloxStudio', access=winreg.KEY_READ)
-            winreg.QueryValueEx(regKey, r'ContentFolder')
-            winreg.CloseKey(regKey)
-
-        # Poll for up to 5 seconds and then start over
-        retryUntilSuccess(poll, 10)
+        regKey = winreg.CreateKey(winreg.HKEY_CURRENT_USER, r'Software\\Roblox\\RobloxStudio', access=winreg.KEY_WRITE)
+        winreg.SetValueEx(regKey, r'ContentFolder', 0, winreg.REG_SZ, content_folder)
+        winreg.CloseKey(regKey)
 
     retryUntilSuccess(func)
 
@@ -174,13 +156,10 @@ def createSettingsFile():
 prepareStudioLogin()
 launcherPath = downloadStudioLauncher()
 studioPath = installStudio(launcherPath)
-launchStudio()
-time.sleep(10)
-requestKillStudioProcess()
 
 # We need to wait between each action here to reduce the chance of studio crashing
-time.sleep(30)
-waitForContentPath()
+time.sleep(5)
+prepareContentFolder()
 createPluginsDirectory()
 removeAutoSaveDirectory()
 createSettingsFile()
