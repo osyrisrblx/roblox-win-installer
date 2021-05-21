@@ -20,6 +20,7 @@ def retryUntilSuccess(func, timeout=0):
             func()
             return
         except:
+            logging.exception('exception')
             time.sleep(0.1)
     raise RuntimeError("Retry timed out.")
 
