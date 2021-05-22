@@ -78,6 +78,11 @@ def prepareStudioLogin():
     retryUntilSuccess(func)
 
 
+def requestKillStudioProcess():
+    log('Sending terminate signal to RobloxStudioBeta')
+    os.system("taskkill /im RobloxStudioBeta.exe")
+
+
 def forceKillStudioProcess():
     log('Forcefully terminate RobloxStudioBeta.exe')
     for proc in psutil.process_iter():
@@ -165,7 +170,7 @@ def createSettingsFile():
 prepareStudioLogin()
 launcherPath = downloadStudioLauncher()
 studioPath = installStudio(launcherPath)
-forceKillStudioProcess()
+requestKillStudioProcess()
 waitForStudioToClose()
 prepareContentFolder()
 createPluginsDirectory()
