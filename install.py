@@ -80,7 +80,7 @@ def prepareStudioLogin():
 
 def requestKillStudioProcess():
     log('Sending terminate signal to RobloxStudioBeta')
-    os.system("taskkill /f /im RobloxStudioBeta.exe")
+    os.system("taskkill /im RobloxStudioBeta.exe")
 
 
 def forceKillStudioProcess():
@@ -95,10 +95,11 @@ def isStudioAlive():
             return True
     return False
 
-def waitForStudioToClose():
+def closeStudio():
     log('Waiting for Studio to close..')
     while isStudioAlive():
-        time.sleep(0.1)
+        requestKillStudioProcess()
+        time.sleep(1)
 
 versions_dir = r"C:\\Program Files (x86)\\Roblox\\Versions\\"
 
@@ -111,8 +112,7 @@ def getStudioFolderPath():
 def prepareContentFolder():
     log('Preparing ContentFolder for Studio')
 
-    studio_folder = getStudioFolderPath()
-    content_folder = studio_folder + r"\\content/"
+    content_folder = getStudioFolderPath() + r"\\content/"
 
     def func():
         regKey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\\Roblox\\RobloxStudio', access=winreg.KEY_WRITE)
@@ -170,9 +170,8 @@ def createSettingsFile():
 prepareStudioLogin()
 launcherPath = downloadStudioLauncher()
 studioPath = installStudio(launcherPath)
-requestKillStudioProcess()
-waitForStudioToClose()
-prepareContentFolder()
+closeStudio()
+# prepareContentFolder()
 createPluginsDirectory()
 removeAutoSaveDirectory()
 createSettingsFile()
