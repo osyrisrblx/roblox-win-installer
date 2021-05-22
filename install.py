@@ -85,9 +85,7 @@ def requestKillStudioProcess():
 
 def forceKillStudioProcess():
     log('Forcefully terminate RobloxStudioBeta.exe')
-    for proc in psutil.process_iter():
-        if proc.name() == "RobloxStudioBeta.exe":
-            proc.kill()
+    os.system("taskkill /f /im RobloxStudioBeta.exe")
 
 def isStudioAlive():
     for proc in psutil.process_iter():
@@ -116,7 +114,7 @@ def prepareContentFolder():
 
     def func():
         regKey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\\Roblox\\RobloxStudio', access=winreg.KEY_WRITE)
-        winreg.SetValue(regKey, r'ContentFolder', winreg.REG_SZ, content_folder)
+        winreg.SetValueEx(regKey, r'ContentFolder', 0, winreg.REG_SZ, content_folder)
         winreg.CloseKey(regKey)
 
     retryUntilSuccess(func)
@@ -170,8 +168,8 @@ def createSettingsFile():
 prepareStudioLogin()
 launcherPath = downloadStudioLauncher()
 studioPath = installStudio(launcherPath)
-closeStudio()
-# prepareContentFolder()
+forceKillStudioProcess()
+prepareContentFolder()
 createPluginsDirectory()
 removeAutoSaveDirectory()
 createSettingsFile()
